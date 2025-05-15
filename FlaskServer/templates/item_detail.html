@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+                    <h2 class="mb-0">
+                        {% if item_type == 'lost' %}
+                        <i class="fas fa-search-minus me-2 text-primary"></i>Lost Item
+                        {% else %}
+                        <i class="fas fa-search-plus me-2 text-success"></i>Found Item
+                        {% endif %}
+                    </h2>
+                    <div>
+                        {% if item_type == 'lost' %}
+                            {% if item.is_resolved %}
+                            <span class="badge bg-success">Found</span>
+                            {% else %}
+                            <span class="badge bg-warning">Still Looking</span>
+                            {% endif %}
+                        {% else %}
+                            {% if item.is_claimed %}
+                            <span class="badge bg-success">Claimed</span>
+                            {% else %}
+                            <span class="badge bg-info">Unclaimed</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if item.image_filename %}
+                <div class="text-center p-3">
+                    <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" class="img-fluid item-detail-img rounded" alt="{{ item.title }}">
+                </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h3 class="card-title mb-4">{{ item.title }}</h3>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-info-circle me-2 text-primary"></i>Basic Information</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Category:</span>
+                                    <span class="badge bg-secondary">{{ item.category.name if item.category else 'Uncategorized' }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Date:</span>
+                                    <span>
+                                        {% if item_type == 'lost' %}
+                                            {{ item.date_lost.strftime('%B %d, %Y') }}
+                                        {% else %}
+                                            {{ item.date_found.strftime('%B %d, %Y') }}
+                                        {% endif %}
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Location:</span>
+                                    <span>
+                                        {% if item_type == 'lost' %}
+                                            {{ item.location_lost }}
+                                        {% else %}
+                                            {{ item.location_found }}
+                                        {% endif %}
+                                    </span>
+                                </li>
+                                {% if item.color %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Color:</span>
+                                    <span>{{ item.color }}</span>
+                                </li>
+                                {% endif %}
+                                {% if item.brand %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Brand:</span>
+                                    <span>{{ item.brand }}</span>
+                                </li>
+                                {% endif %}
+                                {% if item_type == 'lost' and item.reward %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Reward:</span>
+                                    <span class="text-primary">{{ item.reward }}</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-user me-2 text-primary"></i>Contact Information</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        {% if item_type == 'lost' %}
+                                            Reported by:
+                                        {% else %}
+                                            Found by:
+                                        {% endif %}
+                                    </h6>
+                                    <p class="card-text">{{ item.owner.username if item_type == 'lost' else item.founder.username }}</p>
+                                    
+                                    <h6 class="card-subtitle mb-2 text-muted mt-3">Contact Details:</h6>
+                                    <p class="card-text">{{ item.contact_info }}</p>
+                                    
+                                    <div class="d-grid gap-2 mt-3">
+                                        {% if item_type == 'lost' and item.owner.id != current_user.id %}
+                                            <a href="mailto:{{ item.owner.email }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-envelope me-2"></i>Contact by Email
+                                            </a>
+                                        {% elif item_type == 'found' and item.founder.id != current_user.id %}
+                                            <a href="mailto:{{ item.founder.email }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-envelope me-2"></i>Contact by Email
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-align-left me-2 text-primary"></i>Description</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">{{ item.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                        
+                        {% if (item_type == 'lost' and current_user.is_authenticated and current_user.id == item.owner.id) or
+                               (item_type == 'found' and current_user.is_authenticated and current_user.id == item.founder.id) or
+                               (current_user.is_authenticated and current_user.is_admin) %}
+                            {% if item_type == 'lost' %}
+                                <form method="POST" action="{{ url_for('update_lost_status', item_id=item.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="is_resolved" value="{% if item.is_resolved %}False{% else %}True{% endif %}">
+                                    <button type="submit" class="btn {% if item.is_resolved %}btn-warning{% else %}btn-success{% endif %}">
+                                        {% if item.is_resolved %}
+                                            <i class="fas fa-times-circle me-2"></i>Mark as Still Looking
+                                        {% else %}
+                                            <i class="fas fa-check-circle me-2"></i>Mark as Found
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{{ url_for('update_found_status', item_id=item.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="is_resolved" value="{% if item.is_claimed %}False{% else %}True{% endif %}">
+                                    <button type="submit" class="btn {% if item.is_claimed %}btn-warning{% else %}btn-success{% endif %}">
+                                        {% if item.is_claimed %}
+                                            <i class="fas fa-times-circle me-2"></i>Mark as Unclaimed
+                                        {% else %}
+                                            <i class="fas fa-check-circle me-2"></i>Mark as Claimed
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent text-muted text-center">
+                    <small>Posted on {{ item.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

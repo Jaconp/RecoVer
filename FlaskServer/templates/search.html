@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4 text-center">Search Lost & Found Items</h1>
+    
+    <!-- Search Form -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="card shadow search-form">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('search') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.query.label(class="form-label") }}
+                                    {{ form.query(class="form-control", placeholder="Search by keywords...") }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.category.label(class="form-label") }}
+                                    {{ form.category(class="form-select") }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.date_from.label(class="form-label") }}
+                                    {{ form.date_from(class="form-control", type="date") }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.date_to.label(class="form-label") }}
+                                    {{ form.date_to(class="form-control", type="date") }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.item_type.label(class="form-label") }}
+                                    {{ form.item_type(class="form-select") }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    {{ form.location.label(class="form-label") }}
+                                    {{ form.location(class="form-control", placeholder="Search by location...") }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="d-grid">
+                                    {{ form.submit(class="btn btn-primary") }}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Results -->
+    <div class="row">
+        <!-- Lost Items Results -->
+        {% if 'lost' in results and results['lost'] %}
+        <div class="col-lg-6">
+            <h3 class="mb-3">
+                <i class="fas fa-search-minus me-2 text-primary"></i>Lost Items ({{ results['lost']|length }})
+            </h3>
+            <div class="list-group mb-4">
+                {% for item in results['lost'] %}
+                <a href="{{ url_for('lost_item_detail', item_id=item.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ item.title }}</h5>
+                        <small>{{ item.date_lost.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <p class="mb-1 text-truncate">{{ item.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ item.location_lost }}
+                            {% if item.category %}
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-tag me-1"></i>{{ item.category.name }}
+                            {% endif %}
+                        </small>
+                        {% if item.reward %}
+                        <span class="badge bg-info">Reward</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% elif 'lost' in results and request.method == 'POST' %}
+        <div class="col-lg-6">
+            <h3 class="mb-3">
+                <i class="fas fa-search-minus me-2 text-primary"></i>Lost Items (0)
+            </h3>
+            <div class="alert alert-info">
+                No lost items found matching your search criteria.
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Found Items Results -->
+        {% if 'found' in results and results['found'] %}
+        <div class="col-lg-6">
+            <h3 class="mb-3">
+                <i class="fas fa-search-plus me-2 text-success"></i>Found Items ({{ results['found']|length }})
+            </h3>
+            <div class="list-group mb-4">
+                {% for item in results['found'] %}
+                <a href="{{ url_for('found_item_detail', item_id=item.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ item.title }}</h5>
+                        <small>{{ item.date_found.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <p class="mb-1 text-truncate">{{ item.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ item.location_found }}
+                            {% if item.category %}
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-tag me-1"></i>{{ item.category.name }}
+                            {% endif %}
+                        </small>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% elif 'found' in results and request.method == 'POST' %}
+        <div class="col-lg-6">
+            <h3 class="mb-3">
+                <i class="fas fa-search-plus me-2 text-success"></i>Found Items (0)
+            </h3>
+            <div class="alert alert-info">
+                No found items found matching your search criteria.
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if request.method == 'GET' %}
+        <div class="col-12 text-center">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>Use the search form above to find lost and found items.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-transparent text-center py-4">
+                    <h2><i class="fas fa-search-minus me-2"></i>Report Lost Item</h2>
+                    <p class="text-muted mb-0">Provide as much detail as possible to help others identify your item</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-3">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.title.label(class="form-label") }}
+                                    {{ form.title(class="form-control", placeholder="Brief title describing the item") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.title.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.category.label(class="form-label") }}
+                                    {{ form.category(class="form-select") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.category.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.date_lost.label(class="form-label") }}
+                                    {{ form.date_lost(class="form-control", type="date") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.date_lost.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.location_lost.label(class="form-label") }}
+                                    {{ form.location_lost(class="form-control", placeholder="Where you last had the item") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.location_lost.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Optional Details -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.color.label(class="form-label") }}
+                                    {{ form.color(class="form-control", placeholder="Main color(s) of the item") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.color.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.brand.label(class="form-label") }}
+                                    {{ form.brand(class="form-control", placeholder="Brand or manufacturer if applicable") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.brand.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    {{ form.description.label(class="form-label") }}
+                                    {{ form.description(class="form-control", rows=4, placeholder="Detailed description of the item, including any distinguishing features") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Contact & Reward -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.contact_info.label(class="form-label") }}
+                                    {{ form.contact_info(class="form-control", placeholder="How people can contact you") }}
+                                    <div class="form-text">This will be visible to other users.</div>
+                                    <div class="invalid-feedback">
+                                        {% for error in form.contact_info.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.reward.label(class="form-label") }}
+                                    {{ form.reward(class="form-control", placeholder="Optional reward for finding this item") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.reward.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Upload -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    {{ form.image.label(class="form-label") }}
+                                    <div class="input-group">
+                                        {{ form.image(class="form-control file-input", data_preview="#imagePreview") }}
+                                    </div>
+                                    <div class="form-text">Optional. Upload an image of the item to help with identification. Max size: 16MB.</div>
+                                    <div class="invalid-feedback">
+                                        {% for error in form.image.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="mt-2">
+                                        <img id="imagePreview" class="img-fluid rounded" style="max-height: 200px; display: none;" alt="Image preview">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="col-12 mt-4">
+                                <div class="d-grid gap-2">
+                                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

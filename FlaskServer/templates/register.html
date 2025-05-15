@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card auth-card shadow">
+                <div class="card-header bg-transparent text-center py-4">
+                    <h2><i class="fas fa-user-plus me-2"></i>Register</h2>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Registration Form -->
+                    <form method="POST" action="{{ url_for('auth.register') }}" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control", placeholder="Choose a username") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control", placeholder="Enter your email") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control", placeholder="Create a password") }}
+                            <div class="form-text">
+                                Password must be at least 8 characters long.
+                            </div>
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.confirm_password.label(class="form-label") }}
+                            {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.confirm_password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                    
+                    <!-- Social Registration Options -->
+                    <div class="mt-4">
+                        <div class="separator text-center mb-4">
+                            <span class="separator-text px-2">OR</span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('google_auth.login') }}" class="btn btn-outline-info">
+                                <i class="fab fa-google me-2"></i>Register with Google
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent text-center py-3">
+                    <p class="mb-0">
+                        Already have an account? 
+                        <a href="{{ url_for('auth.login') }}">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .separator {
+        display: flex;
+        align-items: center;
+        color: var(--bs-secondary);
+    }
+    
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+</style>
+{% endblock %}

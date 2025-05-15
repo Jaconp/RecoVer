@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">
+        <i class="fas fa-bell me-2"></i>Your Notifications
+    </h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            {% if notifications %}
+                <div class="list-group">
+                    {% for notification in notifications %}
+                        <div class="list-group-item list-group-item-action {% if not notification.is_read %}bg-primary-subtle{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    {% if notification.lost_item and notification.found_item %}
+                                        <i class="fas fa-exchange-alt me-2 text-primary"></i>Potential Match
+                                    {% elif notification.lost_item %}
+                                        <i class="fas fa-search-minus me-2 text-primary"></i>Lost Item Update
+                                    {% elif notification.found_item %}
+                                        <i class="fas fa-search-plus me-2 text-success"></i>Found Item Update
+                                    {% else %}
+                                        <i class="fas fa-info-circle me-2 text-info"></i>System Notification
+                                    {% endif %}
+                                </h5>
+                                <small class="text-muted">{{ notification.created_at.strftime('%b %d, %Y at %I:%M %p') }}</small>
+                            </div>
+                            <p class="mb-1">{{ notification.message }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    {% if notification.lost_item %}
+                                        <a href="{{ url_for('lost_item_detail', item_id=notification.lost_item.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-search-minus me-1"></i>View Lost Item
+                                        </a>
+                                    {% endif %}
+                                    
+                                    {% if notification.found_item %}
+                                        <a href="{{ url_for('found_item_detail', item_id=notification.found_item.id) }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-search-plus me-1"></i>View Found Item
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if not notification.is_read %}
+                                    <span class="badge bg-info">New</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                    <p class="lead">You don't have any notifications yet.</p>
+                    <p>We'll notify you when we find potential matches for your lost or found items.</p>
+                </div>
+            {% endif %}
+            
+            <div class="text-center mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
