@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-transparent text-center py-4">
+                    <h2><i class="fab fa-google me-2"></i>Sign in with Google</h2>
+                    <p class="text-muted mb-0">In a real implementation, you would be redirected to Google's sign-in page</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Google OAuth credentials have not been configured yet. Once they are added to the environment,
+                        you will be redirected to Google's authentication page to securely sign in with your 
+                        Google account.
+                    </div>
+                    
+                    <p class="mb-4">For demonstration purposes, you can use one of these test accounts:</p>
+                    
+                    <div class="list-group mb-4">
+                        <a href="{{ url_for('demo_login', user_id=1) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Admin User</h5>
+                                <small><i class="fas fa-user-shield text-info"></i></small>
+                            </div>
+                            <p class="mb-1">admin@recover.com</p>
+                            <small class="text-muted">Has administrator privileges</small>
+                        </a>
+                        <a href="{{ url_for('demo_login', user_id=2) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Regular User</h5>
+                                <small><i class="fas fa-user text-secondary"></i></small>
+                            </div>
+                            <p class="mb-1">john@example.com</p>
+                            <small class="text-muted">Standard user account with sample lost items</small>
+                        </a>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Note:</strong> In a real application, Google OAuth would be used to verify student identity
+                        and create accounts automatically.
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent text-center py-3">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Return to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

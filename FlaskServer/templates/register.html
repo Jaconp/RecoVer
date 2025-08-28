@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-transparent text-center py-4">
+                    <h2><i class="fas fa-user-plus me-2"></i>Create Account</h2>
+                    <p class="text-muted mb-0">Join RecoVer to report and find lost items</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('register') }}" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
+                            <div class="invalid-feedback">
+                                Please choose a username.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Choose a password" required minlength="8">
+                            <div class="form-text">Password must be at least 8 characters long.</div>
+                            <div class="invalid-feedback">
+                                Please enter a password with at least 8 characters.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                   placeholder="Confirm your password" required>
+                            <div class="invalid-feedback">
+                                Please confirm your password.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Social Registration Options -->
+                    <div class="mt-4">
+                        <div class="separator text-center mb-4">
+                            <span class="separator-text px-2">OR</span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('google_login') }}" class="btn btn-outline-info">
+                                <i class="fab fa-google me-2"></i>Sign up with Google
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent text-center py-3">
+                    <p class="mb-0">
+                        Already have an account? 
+                        <a href="{{ url_for('login') }}">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .separator {
+        display: flex;
+        align-items: center;
+        color: var(--bs-secondary);
+    }
+    
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+</style>
+<script>
+    // Form validation script
+    (function() {
+        'use strict';
+        
+        // Fetch all forms to which we want to apply validation
+        var forms = document.querySelectorAll('.needs-validation');
+        
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                // Additional validation for password match
+                var password = document.getElementById('password');
+                var confirmPassword = document.getElementById('confirm_password');
+                
+                if (password.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity('Passwords do not match');
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+        
+        // Clear custom validity when user types
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            if (this.value === document.getElementById('password').value) {
+                this.setCustomValidity('');
+            } else {
+                this.setCustomValidity('Passwords do not match');
+            }
+        });
+    })();
+</script>
+{% endblock %}

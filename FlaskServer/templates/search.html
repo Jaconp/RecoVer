@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="border-bottom pb-2">
+                <i class="fas fa-search me-2"></i>Search Items
+            </h1>
+            <p class="lead">Search for lost and found items with advanced filters.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Search Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Search Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('search') }}">
+                        <!-- Keyword Search -->
+                        <div class="mb-3">
+                            <label for="query" class="form-label">Keyword Search</label>
+                            <input type="text" class="form-control" id="query" name="query" 
+                                   placeholder="Search by title, description">
+                        </div>
+                        
+                        <!-- Item Type -->
+                        <div class="mb-3">
+                            <label for="item_type" class="form-label">Item Type</label>
+                            <select class="form-select" id="item_type" name="item_type">
+                                <option value="all" selected>All Items</option>
+                                <option value="lost">Lost Items Only</option>
+                                <option value="found">Found Items Only</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="" selected>All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Location -->
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="Search by location">
+                        </div>
+                        
+                        <!-- Date Range -->
+                        <div class="mb-3">
+                            <label for="date_from" class="form-label">Date From</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from">
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_to" class="form-label">Date To</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" 
+                                   max="{{ now.strftime('%Y-%m-%d') }}">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-2"></i>Reset Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div class="col-lg-8">
+            {% if request.method == 'POST' %}
+            <!-- Search Summary -->
+            <div class="mb-4">
+                <h3>Search Results</h3>
+                <p class="text-muted">
+                    Showing {{ results.lost|length + results.found|length }} item(s) matching your search criteria.
+                </p>
+            </div>
+            
+            <!-- Nav tabs for Lost/Found results -->
+            <ul class="nav nav-tabs mb-4" id="resultTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="lost-result-tab" data-bs-toggle="tab" data-bs-target="#lost-results" 
+                            type="button" role="tab" aria-controls="lost-results" aria-selected="true">
+                        <i class="fas fa-search-minus me-2 text-primary"></i>Lost Items 
+                        <span class="badge bg-primary">{{ results.lost|length }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="found-result-tab" data-bs-toggle="tab" data-bs-target="#found-results" 
+                            type="button" role="tab" aria-controls="found-results" aria-selected="false">
+                        <i class="fas fa-search-plus me-2 text-success"></i>Found Items 
+                        <span class="badge bg-success">{{ results.found|length }}</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tab content -->
+            <div class="tab-content" id="resultTabsContent">
+                <!-- Lost Items Results -->
+                <div class="tab-pane fade show active" id="lost-results" role="tabpanel" aria-labelledby="lost-result-tab">
+                    {% if results.lost %}
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            {% for item in results.lost %}
+                            <div class="col">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">{{ item.category_name }}</span>
+                                        <small class="text-muted">{{ item.date_lost.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                    {% if item.image_filename %}
+                                    <div class="card-img-container">
+                                        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" 
+                                             class="card-img-top item-image" alt="{{ item.title }}">
+                                    </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ item.title }}</h5>
+                                        <p class="card-text small text-truncate">{{ item.description }}</p>
+                                        <div class="small mb-2">
+                                            <i class="fas fa-map-marker-alt me-1"></i>{{ item.location_lost }}
+                                        </div>
+                                        {% if item.reward %}
+                                        <div class="mb-2">
+                                            <span class="badge bg-success">Reward: {{ item.reward }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{{ url_for('view_lost_item', item_id=item.id) }}" class="btn btn-sm btn-outline-primary w-100">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>No lost items match your search criteria.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Found Items Results -->
+                <div class="tab-pane fade" id="found-results" role="tabpanel" aria-labelledby="found-result-tab">
+                    {% if results.found %}
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            {% for item in results.found %}
+                            <div class="col">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-success">{{ item.category_name }}</span>
+                                        <small class="text-muted">{{ item.date_found.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                    {% if item.image_filename %}
+                                    <div class="card-img-container">
+                                        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" 
+                                             class="card-img-top item-image" alt="{{ item.title }}">
+                                    </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ item.title }}</h5>
+                                        <p class="card-text small text-truncate">{{ item.description }}</p>
+                                        <div class="small mb-2">
+                                            <i class="fas fa-map-marker-alt me-1"></i>{{ item.location_found }}
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{{ url_for('view_found_item', item_id=item.id) }}" class="btn btn-sm btn-outline-success w-100">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>No found items match your search criteria.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm text-center p-5">
+                <i class="fas fa-search fa-4x mb-3 text-muted"></i>
+                <h3>Search for Lost and Found Items</h3>
+                <p class="lead">Use the filters on the left to search for items.</p>
+                <p class="text-muted">You can search by keywords, categories, location, and date.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .card-img-container {
+        height: 150px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .item-image {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<script>
+    // Set max date to today for date inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('date_to').max = new Date().toISOString().split('T')[0];
+    });
+    
+    // Validate date range
+    document.querySelector('form').addEventListener('submit', function(event) {
+        var dateFrom = document.getElementById('date_from').value;
+        var dateTo = document.getElementById('date_to').value;
+        
+        if (dateFrom && dateTo && dateFrom > dateTo) {
+            alert('Date From cannot be later than Date To');
+            event.preventDefault();
+        }
+    });
+</script>
+{% endblock %}

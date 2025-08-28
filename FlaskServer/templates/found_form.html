@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4 text-center">Report a Found Item</h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('new_found_item') }}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <input type="hidden" name="csrf_token" value="dummy-token">
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="Brief description of the found item" required>
+                            <div class="invalid-feedback">
+                                Please provide a title.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Detailed description of the item..." required></textarea>
+                            <div class="invalid-feedback">
+                                Please provide a description.
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="date_found" class="form-label">Date Found</label>
+                                    <input type="date" class="form-control" id="date_found" name="date_found" required>
+                                    <div class="invalid-feedback">
+                                        Please select the date when the item was found.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="" selected disabled>Select a category</option>
+                                        {% for id, name in categories %}
+                                        <option value="{{ id }}">{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a category.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="location_found" class="form-label">Location Found</label>
+                            <input type="text" class="form-control" id="location_found" name="location_found" placeholder="Where did you find the item?" required>
+                            <div class="invalid-feedback">
+                                Please provide the location where the item was found.
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="color" class="form-label">Color (Optional)</label>
+                                    <input type="text" class="form-control" id="color" name="color" placeholder="Color of the item">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="brand" class="form-label">Brand (Optional)</label>
+                                    <input type="text" class="form-control" id="brand" name="brand" placeholder="Brand name of the item">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contact_info" class="form-label">Contact Information (Email preferred for privacy)</label>
+                            <input type="text" class="form-control" id="contact_info" name="contact_info" placeholder="Email address or phone number - email preferred for privacy" required>
+                            <div class="invalid-feedback">
+                                Please provide contact information.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image (Optional)</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
+                            <div class="form-text">Upload an image of the found item if available (JPG, JPEG, PNG).</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Submit Report</button>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form validation script
+    (function() {
+        'use strict';
+        
+        // Fetch all forms to which we want to apply validation
+        var forms = document.querySelectorAll('.needs-validation');
+        
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

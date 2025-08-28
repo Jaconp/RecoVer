@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">
+        <i class="fas fa-user-shield me-2"></i>Admin Dashboard
+    </h1>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="#" class="list-group-item list-group-item-action active admin-tab-trigger" data-bs-target="#lostItemsTab">
+                    <i class="fas fa-search-minus me-2"></i>Lost Items
+                </a>
+                <a href="#" class="list-group-item list-group-item-action admin-tab-trigger" data-bs-target="#foundItemsTab">
+                    <i class="fas fa-search-plus me-2"></i>Found Items
+                </a>
+                <a href="#" class="list-group-item list-group-item-action admin-tab-trigger" data-bs-target="#usersTab">
+                    <i class="fas fa-users me-2"></i>User Management
+                </a>
+                <a href="#" class="list-group-item list-group-item-action admin-tab-trigger" data-bs-target="#categoriesTab">
+                    <i class="fas fa-tags me-2"></i>Categories
+                </a>
+            </div>
+            
+            <!-- Admin Statistics Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Users:</span>
+                        <span class="badge bg-primary">{{ users|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Lost Items:</span>
+                        <span class="badge bg-warning">{{ lost_items|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Found Items:</span>
+                        <span class="badge bg-success">{{ found_items|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Categories:</span>
+                        <span class="badge bg-info">{{ categories|length }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Lost Items Tab -->
+                <div class="tab-pane fade show active admin-tab-content" id="lostItemsTab">
+                    <div class="card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-search-minus me-2"></i>Lost Items Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>User</th>
+                                            <th>Date Lost</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in lost_items %}
+                                        <tr>
+                                            <td>{{ item.id }}</td>
+                                            <td>{{ item.title }}</td>
+                                            <td>{{ item.owner.username }}</td>
+                                            <td>{{ item.date_lost.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                {% if item.is_resolved %}
+                                                <span class="badge bg-success">Found</span>
+                                                {% else %}
+                                                <span class="badge bg-warning">Looking</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('lost_item_detail', item_id=item.id) }}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <form method="POST" action="{{ url_for('update_lost_status', item_id=item.id) }}" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <input type="hidden" name="is_resolved" value="{{ not item.is_resolved }}">
+                                                        <button type="submit" class="btn btn-outline-{{ 'warning' if item.is_resolved else 'success' }}">
+                                                            <i class="fas fa-{{ 'times' if item.is_resolved else 'check' }}"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Found Items Tab -->
+                <div class="tab-pane fade admin-tab-content" id="foundItemsTab">
+                    <div class="card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-search-plus me-2"></i>Found Items Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>User</th>
+                                            <th>Date Found</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in found_items %}
+                                        <tr>
+                                            <td>{{ item.id }}</td>
+                                            <td>{{ item.title }}</td>
+                                            <td>{{ item.founder.username }}</td>
+                                            <td>{{ item.date_found.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                {% if item.is_claimed %}
+                                                <span class="badge bg-success">Claimed</span>
+                                                {% else %}
+                                                <span class="badge bg-info">Unclaimed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('found_item_detail', item_id=item.id) }}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <form method="POST" action="{{ url_for('update_found_status', item_id=item.id) }}" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <input type="hidden" name="is_resolved" value="{{ not item.is_claimed }}">
+                                                        <button type="submit" class="btn btn-outline-{{ 'warning' if item.is_claimed else 'success' }}">
+                                                            <i class="fas fa-{{ 'times' if item.is_claimed else 'check' }}"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Users Tab -->
+                <div class="tab-pane fade admin-tab-content" id="usersTab">
+                    <div class="card">
+                        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>User Management</h5>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
+                                    <i class="fas fa-print me-1"></i>Print User List
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- User stats -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="card text-center bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-primary">{{ users|length }}</h5>
+                                            <p class="card-text">Total Users</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-warning">{{ users|selectattr('is_admin', 'eq', true)|list|length }}</h5>
+                                            <p class="card-text">Admins</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-success">{{ users|selectattr('is_admin', 'ne', true)|list|length }}</h5>
+                                            <p class="card-text">Regular Users</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-info">
+                                                {% set today = now.date() %}
+                                                {% set new_users = users|selectattr('created_at', 'defined')|selectattr('created_at.date', 'defined')|selectattr('created_at.date', 'eq', today)|list|length %}
+                                                {{ new_users }}
+                                            </h5>
+                                            <p class="card-text">New Today</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Search bar -->
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <input type="text" id="userSearchInput" class="form-control" placeholder="Search users by name or email..." oninput="filterUsers()">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="userTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Joined</th>
+                                            <th>Role</th>
+                                            <th>Activity</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr class="user-row">
+                                            <td>{{ user.id }}</td>
+                                            <td class="username-cell">{{ user.username }}</td>
+                                            <td class="email-cell">{{ user.email }}</td>
+                                            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                {% if user.is_admin %}
+                                                <span class="badge bg-warning">Admin</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">User</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ user.lost_items.count() }} Lost</span>
+                                                <span class="badge bg-success">{{ user.found_items.count() }} Found</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <form method="POST" action="{{ url_for('make_admin', user_id=user.id) }}" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-{{ 'danger' if user.is_admin else 'warning' }}">
+                                                            {% if user.is_admin %}
+                                                            <i class="fas fa-user me-1"></i>Remove Admin
+                                                            {% else %}
+                                                            <i class="fas fa-user-shield me-1"></i>Make Admin
+                                                            {% endif %}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Categories Tab -->
+                <div class="tab-pane fade admin-tab-content" id="categoriesTab">
+                    <div class="card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Category Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6>Add New Category</h6>
+                                    <form method="POST" action="{{ url_for('new_category') }}" class="needs-validation" novalidate>
+                                        {{ category_form.hidden_tag() }}
+                                        <div class="input-group">
+                                            {{ category_form.name(class="form-control", placeholder="Category name") }}
+                                            {{ category_form.submit(class="btn btn-primary") }}
+                                        </div>
+                                        {% if category_form.name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in category_form.name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Lost Items</th>
+                                            <th>Found Items</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for category in categories %}
+                                        <tr>
+                                            <td>{{ category.id }}</td>
+                                            <td>{{ category.name }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ category.lost_items|length }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">{{ category.found_items|length }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
