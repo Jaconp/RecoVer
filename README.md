@@ -1,4 +1,5 @@
 # RecoVer - Lost and Found Application
+Note: This file is for technical documentation. To find out how to use our website, please see the User Manual.
 
 ## Project Overview
 A comprehensive Flask-based lost and found web application that connects users through Google-only authentication. Students can post, search, and manage lost and found items with admin oversight.
