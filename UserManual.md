@@ -7,9 +7,9 @@
 4. Reporting a Stolen Item
 
 ## Getting Started
-Before using our website, it is recommended that you sign in first as it allows you to use most of the functionality in our website. To do so, click the sign in button on the top right of the page. 
-Using your student icon account is **mandatory** to ensure that none RVians cannot use the site (or at least non-MOE students). 
-You can choose the "sign in with Google" function (recommended) or the manual login function.
+Before using our website, it is recommended that you sign in first, as this allows you to access most of the features on our site. To sign in, click the Sign In button at the top right of the page.
+
+Using your student icon account is mandatory to ensure that only RVians (or MOE students) can use the site. You may choose either the “Sign in with Google” function (recommended) or the manual login option.
 
 ## The Catalogue
 **Before** submitting a report, please look at the catalogue of items. Our homepage shows the latest items being found or lost, so if you have lost an item, chances are it is already there.
@@ -31,12 +31,15 @@ When reporting an item, there are different fields you can fill out. Doing so wi
 - Your contact details (email, phone no.) to contact you if your item is found or if you found an item
 - Reward (optional - to increase chances of your item being found :) )
 
-After filling out all the relevant fields, you can finally click the submit button and our website will automatically put up the report for you. :)
+After completing the fields, click Submit, and your report will automatically appear on the website.
 
 ## Reporting a Stolen Item
-There is a possibility that someone on the website might sneakily steal your item by replying to a report and claiming that it is theirs. 
-Fortunately for you, our reporting and claiming system is well-documented, meaning that the identity of both the reporter and replyer will both be stored on the website.
-If you find that someone has claimed a report of your item on the website, you can click the "Report Stolen Item" on the bottom of the completed report, and this issue will be brought up to the General Office. 
-When the General Office has verified your report, the thief will be forced to return your item and the neccessary punishment will be dealt.
+There is a possibility that someone may falsely claim your item by replying to a report.
+
+Fortunately, our reporting and claiming system keeps detailed records of both reporters and claimers.
+
+If someone claims your item, click the Report Stolen Item button at the bottom of the report. Our administrators will review the case and determine whether it should be escalated to the General Office.
+
+If the item is deemed stolen, the perpetrator will be required to return it, and appropriate consequences will follow.
 
 That is all for the user manual! If you still need additional help, feel free to call the administrator.
