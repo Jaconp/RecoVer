@@ -28,6 +28,8 @@ When reporting an item, there are different fields you can fill out. Doing so wi
 - Brand (optional)
 - Description - more in depth (optional?)
 - Image of item (optional - but better if have)
+- Your contact details (email, phone no.) to contact you if your item is found or if you found an item
+- Reward (optional - to increase chances of your item being found :) )
 
 After filling out all the relevant fields, you can finally click the submit button and our website will automatically put up the report for you. :)
 
